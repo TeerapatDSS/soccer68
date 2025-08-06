@@ -3,26 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Football Timer</title>
+    <title>ระบบจับเวลาฟุตบอลหุ่นยนต์</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@400;600;700&display=swap');
         
-        body {
-            font-family: 'Orbitron', monospace;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-        }
+        .orbitron { font-family: 'Orbitron', monospace; }
+        .sarabun { font-family: 'Sarabun', sans-serif; }
         
         .glow {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-        }
-        
-        .glow-green {
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-        }
-        
-        .glow-red {
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
         
         .pulse-glow {
@@ -30,351 +20,128 @@
         }
         
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); }
         }
         
-        .robot-eye {
-            animation: robotBlink 3s infinite;
+        .robot-gradient {
+            background: #000000;
+            position: relative;
         }
         
-        @keyframes robotBlink {
-            0%, 90%, 100% { opacity: 1; }
-            95% { opacity: 0.3; }
+        @keyframes techMove {
+            0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+            100% { background-position: 50px 50px, -50px -50px, 25px 25px, -25px -25px; }
         }
         
-        .score-animation {
-            animation: scoreUp 0.5s ease-out;
+        .neon-text {
+            text-shadow: 0 0 10px currentColor;
         }
         
-        @keyframes scoreUp {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        .score-button {
+            transition: all 0.3s ease;
         }
         
-        .whistle-animation {
-            animation: whistleBlow 1s ease-out;
+        .score-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
         }
         
-        @keyframes whistleBlow {
-            0% { transform: scale(1) rotate(0deg); opacity: 1; }
-            25% { transform: scale(1.5) rotate(-10deg); opacity: 0.8; }
-            50% { transform: scale(2) rotate(10deg); opacity: 0.6; }
-            75% { transform: scale(1.5) rotate(-5deg); opacity: 0.4; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0; }
-        }
-        
-        .countdown-flash {
-            animation: countdownFlash 1s infinite;
-        }
-        
-        @keyframes countdownFlash {
-            0%, 50% { 
-                background: linear-gradient(45deg, #dc2626, #ef4444);
-                box-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
-                transform: scale(1);
-            }
-            25%, 75% { 
-                background: linear-gradient(45deg, #fbbf24, #f59e0b);
-                box-shadow: 0 0 60px rgba(251, 191, 36, 0.9);
-                transform: scale(1.05);
-            }
-        }
-        
-        .shake {
-            animation: shake 0.5s infinite;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        
-        .winner-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s ease;
-        }
-        
-        .winner-popup.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .winner-content {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            border: 4px solid #10b981;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            transform: scale(0.5) rotate(-10deg);
-            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 0 100px rgba(16, 185, 129, 0.8);
-            max-width: 800px;
-            width: 90%;
-        }
-        
-        .winner-popup.show .winner-content {
-            transform: scale(1) rotate(0deg);
-        }
-        
-        .trophy-bounce {
-            animation: trophyBounce 2s infinite;
-        }
-        
-        @keyframes trophyBounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
-            40% { transform: translateY(-30px) scale(1.1); }
-            60% { transform: translateY(-15px) scale(1.05); }
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #fbbf24;
-            animation: confettiFall 3s linear infinite;
-        }
-        
-        @keyframes confettiFall {
-            0% { 
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% { 
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-        
-        .firework {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            animation: fireworkExplode 1.5s ease-out infinite;
-        }
-        
-        @keyframes fireworkExplode {
-            0% {
-                transform: scale(0);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
-        }
-        
-        .winner-text-glow {
-            animation: winnerGlow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes winnerGlow {
-            from {
-                text-shadow: 0 0 20px #fbbf24, 0 0 30px #fbbf24, 0 0 40px #fbbf24;
-            }
-            to {
-                text-shadow: 0 0 30px #f59e0b, 0 0 40px #f59e0b, 0 0 50px #f59e0b;
-            }
-        }
-        
-        .scoreboard-header {
-            background: linear-gradient(90deg, #10b981, #059669);
-            color: white;
-            padding: 15px;
-            border-radius: 10px 10px 0 0;
-            margin: -40px -40px 30px -40px;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        
-        .scoreboard-teams {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 20px;
-            align-items: center;
-            margin: 30px 0;
-        }
-        
-        .team-section {
-            text-align: center;
-        }
-        
-        .team-name {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 10px;
-        }
-        
-        .team-score {
-            font-size: 4rem;
-            font-weight: 900;
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-            border: 2px solid #10b981;
-            border-radius: 15px;
-            padding: 20px;
-            min-width: 120px;
-            display: inline-block;
-        }
-        
-        .vs-divider {
-            font-size: 2rem;
-            color: #6b7280;
-            font-weight: bold;
-        }
-        
-        .match-result {
-            background: rgba(16, 185, 129, 0.1);
-            border: 2px solid #10b981;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .result-text {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #10b981;
-            margin-bottom: 10px;
-        }
-        
-        .winner-name {
-            font-size: 2rem;
-            color: white;
-            font-weight: bold;
+        .timer-display {
+            background: linear-gradient(45deg, #0f172a, #1e293b);
+            border: 2px solid #06b6d4;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-slate-800/90 backdrop-blur-sm rounded-3xl p-8 max-w-4xl w-full border border-blue-500/30 glow">
-
-        <!-- Header with Robot -->
-        <div class="text-center mb-8">
-            <div class="text-6xl mb-4">🤖⚽</div>
-            <h1 class="text-4xl font-black text-blue-400 mb-2">ROBOT FOOTBALL TIMER</h1>
-            <div class="flex justify-center space-x-2">
-                <div class="w-3 h-3 bg-blue-500 rounded-full robot-eye"></div>
-                <div class="w-3 h-3 bg-blue-500 rounded-full robot-eye" style="animation-delay: 0.5s;"></div>
-                <div class="w-3 h-3 bg-blue-500 rounded-full robot-eye" style="animation-delay: 1s;"></div>
-            </div>
+<body class="min-h-screen robot-gradient tech-pattern overflow-hidden">
+    <!-- Tech Overlay -->
+    <div class="tech-overlay"></div>
+    <!-- Header -->
+    <div class="text-center py-4">
+        <h1 class="orbitron text-4xl md:text-6xl font-black text-white neon-text mb-2">
+            🤖 ROBOT FOOTBALL TIMER ⚽
+        </h1>
+        <div class="text-cyan-300 orbitron text-lg">
+            ระบบจับเวลาฟุตบอลหุ่นยนต์ เทคโนโลยีทันสมัย
         </div>
+    </div>
 
-        <!-- Timer Display -->
-        <div class="text-center mb-8">
-            <div id="timer" class="text-8xl font-black text-white mb-4 pulse-glow bg-slate-900/50 rounded-2xl py-6 border border-blue-400/50">
-                03:00
-            </div>
-            <div class="flex justify-center space-x-4">
-                <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold text-lg glow-green transition-all duration-300 transform hover:scale-105">
-                    ▶️ START
-                </button>
-                <button id="pauseBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105">
-                    ⏸️ PAUSE
-                </button>
-                <button id="resetBtn" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold text-lg glow-red transition-all duration-300 transform hover:scale-105">
-                    🔄 RESET
-                </button>
-            </div>
-        </div>
-
-        <!-- Score Section -->
-        <div class="grid grid-cols-2 gap-8">
-            <!-- Team A -->
-            <div class="bg-gradient-to-br from-blue-900/50 to-blue-800/50 rounded-2xl p-6 border border-blue-400/30 text-center">
-                <div class="text-2xl mb-2">🤖</div>
-                <input id="teamAName" type="text" placeholder="ชื่อทีม A" maxlength="20" 
-                       class="text-xl font-bold text-blue-300 mb-4 bg-transparent border-b-2 border-blue-400/50 text-center w-full focus:outline-none focus:border-blue-400 placeholder-blue-400/70">
-                <div id="scoreA" class="text-6xl font-black text-white mb-4 bg-slate-900/50 rounded-xl py-4 border border-blue-400/50">0</div>
-                <div class="flex justify-center space-x-3">
-                    <button id="addA" class="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 rounded-full font-bold text-xl glow transition-all duration-300 transform hover:scale-110">+</button>
-                    <button id="subA" class="bg-slate-600 hover:bg-slate-700 text-white w-12 h-12 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-110">-</button>
+    <!-- Main Timer Display -->
+    <div class="flex justify-center mb-8">
+        <div class="timer-display rounded-3xl p-8 glow">
+            <div class="text-center">
+                <div class="orbitron text-8xl md:text-9xl font-black text-cyan-400 neon-text" id="timerDisplay">
+                    03:00
                 </div>
-            </div>
-
-            <!-- Team B -->
-            <div class="bg-gradient-to-br from-red-900/50 to-red-800/50 rounded-2xl p-6 border border-red-400/30 text-center">
-                <div class="text-2xl mb-2">🤖</div>
-                <input id="teamBName" type="text" placeholder="ชื่อทีม B" maxlength="20" 
-                       class="text-xl font-bold text-red-300 mb-4 bg-transparent border-b-2 border-red-400/50 text-center w-full focus:outline-none focus:border-red-400 placeholder-red-400/70">
-                <div id="scoreB" class="text-6xl font-black text-white mb-4 bg-slate-900/50 rounded-xl py-4 border border-red-400/50">0</div>
-                <div class="flex justify-center space-x-3">
-                    <button id="addB" class="bg-red-600 hover:bg-red-700 text-white w-12 h-12 rounded-full font-bold text-xl glow-red transition-all duration-300 transform hover:scale-110">+</button>
-                    <button id="subB" class="bg-slate-600 hover:bg-slate-700 text-white w-12 h-12 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-110">-</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Status Indicator -->
-        <div class="text-center mt-6">
-            <div id="status" class="text-lg font-bold text-blue-400">⚡ READY TO START</div>
-            <div id="whistleEffect" class="text-6xl mt-4 opacity-0">🔊</div>
-        </div>
-
-        <!-- Developer Banner -->
-        <div class="mt-8 pt-6 border-t border-blue-500/30">
-            <div class="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-4 text-center border border-blue-400/20">
-                <div class="text-sm text-blue-300 font-medium">
-                    💻 พัฒนาระบบโดย <span class="text-white font-bold">ครูธีรภัทร เสียมไหม</span>
-                </div>
-                <div class="text-xs text-blue-400 mt-1">
-                    กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี
-                </div>
-                <div class="text-xs text-blue-400">
-                    โรงเรียนเทพศิรินทร์ สมุทรปราการ
+                <div class="text-cyan-300 orbitron text-xl mt-2">
+                    เวลาที่เหลือ
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Winner Popup -->
-    <div id="winnerPopup" class="winner-popup">
-        <div class="winner-content">
-            <div class="scoreboard-header">
-                ⚽ ROBOT FOOTBALL MATCH RESULT ⚽
-            </div>
-            
-            <div class="scoreboard-teams">
-                <div class="team-section">
-                    <div id="teamAFinal" class="team-name">TEAM A</div>
-                    <div id="scoreAFinal" class="team-score">0</div>
+    <!-- Score Board -->
+    <div class="grid grid-cols-2 gap-8 max-w-6xl mx-auto px-4 mb-8">
+        <!-- Team A -->
+        <div class="bg-gradient-to-br from-red-600 to-red-800 rounded-3xl p-6 glow">
+            <div class="text-center">
+                <div class="text-white orbitron text-2xl font-bold mb-4">
+                    🔴 ฝ่าย A
                 </div>
-                
-                <div class="vs-divider">VS</div>
-                
-                <div class="team-section">
-                    <div id="teamBFinal" class="team-name">TEAM B</div>
-                    <div id="scoreBFinal" class="team-score">0</div>
+                <div class="text-8xl font-black text-white orbitron neon-text mb-6" id="scoreA">
+                    0
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button onclick="changeScore('A', 1)" class="score-button bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl orbitron font-bold text-xl">
+                        +1 ⚽
+                    </button>
+                    <button onclick="changeScore('A', -1)" class="score-button bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl orbitron font-bold text-xl">
+                        -1 ❌
+                    </button>
                 </div>
             </div>
-            
-            <div class="match-result">
-                <div id="winnerTrophy" class="text-6xl mb-4 trophy-bounce">🏆</div>
-                <div id="resultText" class="result-text">WINNER!</div>
-                <div id="winnerTeam" class="winner-name"></div>
+        </div>
+
+        <!-- Team B -->
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-6 glow">
+            <div class="text-center">
+                <div class="text-white orbitron text-2xl font-bold mb-4">
+                    🔵 ฝ่าย B
+                </div>
+                <div class="text-8xl font-black text-white orbitron neon-text mb-6" id="scoreB">
+                    0
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button onclick="changeScore('B', 1)" class="score-button bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl orbitron font-bold text-xl">
+                        +1 ⚽
+                    </button>
+                    <button onclick="changeScore('B', -1)" class="score-button bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl orbitron font-bold text-xl">
+                        -1 ❌
+                    </button>
+                </div>
             </div>
-            
-            <button id="closePopup" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105">
-                🎉 ปิด
-            </button>
+        </div>
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="flex justify-center gap-6 mb-8">
+        <button onclick="startTimer()" id="startBtn" class="score-button bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-2xl orbitron font-bold text-xl">
+            ▶️ เริ่ม
+        </button>
+        <button onclick="pauseTimer()" id="pauseBtn" class="score-button bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-4 rounded-2xl orbitron font-bold text-xl">
+            ⏸️ หยุด
+        </button>
+        <button onclick="resetTimer()" class="score-button bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl orbitron font-bold text-xl">
+            🔄 รีเซ็ต
+        </button>
+    </div>
+
+    <!-- Developer Banner -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-t-2 border-cyan-400 py-3">
+        <div class="text-center">
+            <div class="sarabun text-cyan-300 text-sm md:text-base font-semibold">
+                พัฒนาระบบโดย ครูธีรภัทร เสียมไหม กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี โรงเรียนเทพศิรินทร์ สมุทรปราการ
+            </div>
         </div>
     </div>
 
@@ -385,268 +152,116 @@
         let scoreA = 0;
         let scoreB = 0;
 
-        const timerDisplay = document.getElementById('timer');
-        const startBtn = document.getElementById('startBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const scoreADisplay = document.getElementById('scoreA');
-        const scoreBDisplay = document.getElementById('scoreB');
-        const statusDisplay = document.getElementById('status');
-        const whistleEffect = document.getElementById('whistleEffect');
-        const teamANameInput = document.getElementById('teamAName');
-        const teamBNameInput = document.getElementById('teamBName');
-        const winnerPopup = document.getElementById('winnerPopup');
-        const winnerTeam = document.getElementById('winnerTeam');
-        const teamAFinal = document.getElementById('teamAFinal');
-        const teamBFinal = document.getElementById('teamBFinal');
-        const scoreAFinal = document.getElementById('scoreAFinal');
-        const scoreBFinal = document.getElementById('scoreBFinal');
-        const resultText = document.getElementById('resultText');
-        const closePopup = document.getElementById('closePopup');
-
-        // Sound effect functions using Web Audio API
-        function createBeep(frequency, duration, volume = 0.3) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
-            oscillator.type = 'square';
-            
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
-        }
-
-        function playWhistle() {
-            // Create sharp "PEEEEEE" whistle sound effect
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Long sharp whistle blast - very high pitch
-            const osc1 = audioContext.createOscillator();
-            const gain1 = audioContext.createGain();
-            osc1.connect(gain1);
-            gain1.connect(audioContext.destination);
-            osc1.frequency.value = 3200; // Higher pitch for sharper sound
-            osc1.type = 'square'; // Square wave for sharper tone
-            gain1.gain.setValueAtTime(0, audioContext.currentTime);
-            gain1.gain.linearRampToValueAtTime(0.8, audioContext.currentTime + 0.02); // Quick attack
-            gain1.gain.setValueAtTime(0.7, audioContext.currentTime + 0.8); // Hold the sound
-            gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2); // Long decay
-            osc1.start(audioContext.currentTime);
-            osc1.stop(audioContext.currentTime + 1.2);
-            
-            // Add harmonic for more realistic whistle
-            const osc2 = audioContext.createOscillator();
-            const gain2 = audioContext.createGain();
-            osc2.connect(gain2);
-            gain2.connect(audioContext.destination);
-            osc2.frequency.value = 3400; // Slightly higher harmonic
-            osc2.type = 'sine';
-            gain2.gain.setValueAtTime(0, audioContext.currentTime);
-            gain2.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.02);
-            gain2.gain.setValueAtTime(0.25, audioContext.currentTime + 0.8);
-            gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
-            osc2.start(audioContext.currentTime);
-            osc2.stop(audioContext.currentTime + 1.2);
-            
-            // Show whistle animation
-            whistleEffect.style.opacity = '1';
-            whistleEffect.classList.add('whistle-animation');
-            setTimeout(() => {
-                whistleEffect.style.opacity = '0';
-                whistleEffect.classList.remove('whistle-animation');
-            }, 1200);
-        }
-
-        function playCountdownBeep() {
-            createBeep(800, 0.2, 0.5);
-        }
-
-        function playFinalBeep() {
-            createBeep(1200, 0.5, 0.6);
-            setTimeout(() => createBeep(1000, 0.5, 0.6), 200);
-            setTimeout(() => createBeep(800, 0.8, 0.6), 400);
-        }
-
-        function createConfetti() {
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.backgroundColor = ['#fbbf24', '#f59e0b', '#3b82f6', '#ef4444', '#10b981'][Math.floor(Math.random() * 5)];
-                    confetti.style.animationDelay = Math.random() * 3 + 's';
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 3000);
-                }, i * 100);
-            }
-        }
-
-        function createFireworks() {
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const firework = document.createElement('div');
-                    firework.className = 'firework';
-                    firework.style.left = Math.random() * 100 + 'vw';
-                    firework.style.top = Math.random() * 100 + 'vh';
-                    firework.style.backgroundColor = ['#fbbf24', '#f59e0b', '#3b82f6', '#ef4444', '#10b981'][Math.floor(Math.random() * 5)];
-                    document.body.appendChild(firework);
-                    
-                    setTimeout(() => {
-                        firework.remove();
-                    }, 1500);
-                }, i * 200);
-            }
-        }
-
-        function showWinnerPopup(winner, teamAName, teamBName) {
-            // Update team names and scores
-            teamAFinal.textContent = teamAName || 'TEAM A';
-            teamBFinal.textContent = teamBName || 'TEAM B';
-            scoreAFinal.textContent = scoreA;
-            scoreBFinal.textContent = scoreB;
-            
-            // Update result section
-            if (winner === 'A') {
-                winnerTeam.textContent = teamAName || 'TEAM A';
-                resultText.textContent = 'ชนะเลิศ!';
-                document.getElementById('winnerTrophy').textContent = '🏆';
-            } else if (winner === 'B') {
-                winnerTeam.textContent = teamBName || 'TEAM B';
-                resultText.textContent = 'ชนะเลิศ!';
-                document.getElementById('winnerTrophy').textContent = '🏆';
-            } else {
-                winnerTeam.textContent = 'เสมอกัน!';
-                resultText.textContent = 'เสมอ!';
-                document.getElementById('winnerTrophy').textContent = '🤝';
-            }
-            
-            winnerPopup.classList.add('show');
-            createConfetti();
-            createFireworks();
-        }
-
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = display;
             
-            // Special effects for final countdown (no shaking)
-            if (timeLeft <= 10 && timeLeft > 0) {
-                timerDisplay.className = 'text-8xl font-black text-white mb-4 countdown-flash bg-slate-900/50 rounded-2xl py-6 border border-red-400/50';
-            } else if (timeLeft <= 30) {
-                timerDisplay.className = 'text-8xl font-black text-red-400 mb-4 pulse-glow bg-slate-900/50 rounded-2xl py-6 border border-red-400/50';
+            // Add pulse effect when time is running out
+            if (timeLeft <= 30 && isRunning) {
+                document.getElementById('timerDisplay').classList.add('pulse-glow');
             } else {
-                timerDisplay.className = 'text-8xl font-black text-white mb-4 pulse-glow bg-slate-900/50 rounded-2xl py-6 border border-blue-400/50';
+                document.getElementById('timerDisplay').classList.remove('pulse-glow');
             }
         }
 
         function startTimer() {
-            if (!isRunning) {
+            if (!isRunning && timeLeft > 0) {
                 isRunning = true;
-                statusDisplay.textContent = '🚀 GAME ACTIVE';
-                statusDisplay.className = 'text-lg font-bold text-green-400';
-                
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     updateTimerDisplay();
                     
-                    // Countdown visual effects only (no sound or shaking)
-                    
                     if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        isRunning = false;
-                        playFinalBeep(); // Play final beep when time is up
-                        statusDisplay.textContent = '🏁 TIME UP!';
-                        statusDisplay.className = 'text-lg font-bold text-red-400';
-                        
-                        // Determine winner and show popup
+                        pauseTimer();
+                        // Flash the screen when time is up
+                        document.body.style.animation = 'flash 0.5s ease-in-out 3';
                         setTimeout(() => {
-                            const teamAName = teamANameInput.value.trim();
-                            const teamBName = teamBNameInput.value.trim();
-                            
-                            if (scoreA > scoreB) {
-                                statusDisplay.textContent = '🏆 ' + (teamAName || 'TEAM A') + ' WINS!';
-                                showWinnerPopup('A', teamAName, teamBName);
-                            } else if (scoreB > scoreA) {
-                                statusDisplay.textContent = '🏆 ' + (teamBName || 'TEAM B') + ' WINS!';
-                                showWinnerPopup('B', teamAName, teamBName);
-                            } else {
-                                statusDisplay.textContent = '🤝 IT\'S A TIE!';
-                                showWinnerPopup('tie', teamAName, teamBName);
-                            }
-                        }, 1000);
+                            document.body.style.animation = '';
+                        }, 1500);
                     }
                 }, 1000);
+                
+                document.getElementById('startBtn').style.opacity = '0.5';
+                document.getElementById('pauseBtn').style.opacity = '1';
             }
         }
 
         function pauseTimer() {
-            if (isRunning) {
+            isRunning = false;
+            if (timerInterval) {
                 clearInterval(timerInterval);
-                isRunning = false;
-                statusDisplay.textContent = '⏸️ PAUSED';
-                statusDisplay.className = 'text-lg font-bold text-yellow-400';
+                timerInterval = null;
             }
+            
+            document.getElementById('startBtn').style.opacity = '1';
+            document.getElementById('pauseBtn').style.opacity = '0.5';
         }
 
         function resetTimer() {
-            clearInterval(timerInterval);
-            isRunning = false;
+            pauseTimer();
             timeLeft = 180;
             updateTimerDisplay();
-            statusDisplay.textContent = '⚡ READY TO START';
-            statusDisplay.className = 'text-lg font-bold text-blue-400';
         }
 
-        function updateScore(team, change) {
+        function changeScore(team, change) {
             if (team === 'A') {
                 scoreA = Math.max(0, scoreA + change);
-                scoreADisplay.textContent = scoreA;
-                scoreADisplay.classList.add('score-animation');
-                setTimeout(() => scoreADisplay.classList.remove('score-animation'), 500);
+                document.getElementById('scoreA').textContent = scoreA;
             } else {
                 scoreB = Math.max(0, scoreB + change);
-                scoreBDisplay.textContent = scoreB;
-                scoreBDisplay.classList.add('score-animation');
-                setTimeout(() => scoreBDisplay.classList.remove('score-animation'), 500);
+                document.getElementById('scoreB').textContent = scoreB;
+            }
+            
+            // Add celebration effect for positive scores
+            if (change > 0) {
+                const scoreElement = document.getElementById(`score${team}`);
+                scoreElement.style.animation = 'bounce 0.6s ease-in-out';
+                setTimeout(() => {
+                    scoreElement.style.animation = '';
+                }, 600);
             }
         }
 
-        // Event listeners
-        startBtn.addEventListener('click', startTimer);
-        pauseBtn.addEventListener('click', pauseTimer);
-        resetBtn.addEventListener('click', resetTimer);
-
-        document.getElementById('addA').addEventListener('click', () => updateScore('A', 1));
-        document.getElementById('subA').addEventListener('click', () => updateScore('A', -1));
-        document.getElementById('addB').addEventListener('click', () => updateScore('B', 1));
-        document.getElementById('subB').addEventListener('click', () => updateScore('B', -1));
-
-        // Close popup event
-        closePopup.addEventListener('click', () => {
-            winnerPopup.classList.remove('show');
-        });
-
-        // Close popup when clicking outside
-        winnerPopup.addEventListener('click', (e) => {
-            if (e.target === winnerPopup) {
-                winnerPopup.classList.remove('show');
+        // Add flash animation for time up
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes flash {
+                0%, 100% { background-color: rgba(0, 0, 0, 0); }
+                50% { background-color: rgba(255, 255, 255, 0.3); }
             }
-        });
+            @keyframes bounce {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Initialize display
         updateTimerDisplay();
+        document.getElementById('pauseBtn').style.opacity = '0.5';
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ': // Spacebar
+                    e.preventDefault();
+                    if (isRunning) pauseTimer();
+                    else startTimer();
+                    break;
+                case 'r':
+                case 'R':
+                    resetTimer();
+                    break;
+                case '1':
+                    changeScore('A', 1);
+                    break;
+                case '2':
+                    changeScore('B', 1);
+                    break;
+            }
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ac2c0cb357fd10',t:'MTc1NDQ1ODUzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ac2ee3467dfd10',t:'MTc1NDQ1ODY1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
